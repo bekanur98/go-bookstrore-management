@@ -59,7 +59,7 @@ func DeleteBook(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateBook(w http.ResponseWriter, r *http.Request) {
-	var updateBook = models.Book{}
+	var updateBook = &models.Book{}
 	utils.ParseBody(r, updateBook)
 	vars := mux.Vars(r)
 	bookId := vars["bookId"]
@@ -68,7 +68,15 @@ func UpdateBook(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("error while parsing")
 	}
 	book, db := models.GetBookById(ID)
-	book = &updateBook
+	if updateBook.Author != "" {
+		book.Author = updateBook.Author
+	}
+	if updateBook.Name != "" {
+		book.Name = updateBook.Name
+	}
+	if updateBook.Publication != "" {
+		book.Publication = updateBook.Publication
+	}
 	db.Save(&book)
 	res, _ := json.Marshal(book)
 	w.Header().Set("Content-Type", "application/json")
